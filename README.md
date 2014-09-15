@@ -1,4 +1,6 @@
-go-nes
-======
+# go-nes
 
-a few nes-related experiments in Golang.
+this repo contains a few nes-related experiments in Golang.
+
+## nsfinfo
+* command-line tool that gives the full header details of a NSF file
