@@ -11,10 +11,12 @@ run `go get` to download via git.
     $ nsfinfo path-to.nsf
 
 ## Example
-    $ nsfinfo loz.nsf
-        Details of loz.nsf
-          song name: The Legend of Zelda
-          TODO: more fields!
+    $ nsfinfo samples/loz.nsf
+      name             : The Legend of Zelda
+      artist           : Koji Kondo
+      copyright holder : 1987 Nintendo
+      total # of songs : 8
+      load address     : 0x608d
 
 ## todo
 * listing of all the header fields (currently, only a partial listing is produced)
