@@ -106,7 +106,7 @@ func (h nsfHeader) extraChips() string {
 	if len(chipsInUse) == 0 {
 		chipsInUse = append(chipsInUse, "none")
 	}
-	return fmt.Sprintf("%v", chipsInUse) // do a better comma-delimited formatting here
+	return strings.Join(chipsInUse, ", ")
 }
 
 func trimNull(s []byte) string {
