@@ -8,24 +8,29 @@ import (
 )
 
 type regionFlag byte
-
-const (
-	pal  regionFlag = 1 << iota
-	dual            // if both are off, it is a NTSC file
-)
-
 type extraChipFlag byte
 
 const (
-	vrc6 extraChipFlag = 1 << iota
-	vrc7
-	fds
-	mmc5
-	namco163
-	sunsoft5b
-	futureChip1 // must never be set
-	futureChip2 // must never be set
+	pal regionFlag = 1 << iota
+	dual
+
+	futureChip1 extraChipFlag = 1 << 6
+	futureChip2 extraChipFlag = 1 << 7
 )
+
+var extraChips = []struct {
+	flag extraChipFlag
+	name string
+}{
+	{flag: 1 << 0, name: "VRC6"},
+	{flag: 1 << 1, name: "VRC7"},
+	{flag: 1 << 2, name: "Famicom Disk System"},
+	{flag: 1 << 3, name: "MMC5"},
+	{flag: 1 << 4, name: "Namco 163"},
+	{flag: 1 << 5, name: "Sunsoft 5B"},
+	{flag: futureChip1, name: "Future Chip 1 (not supported)"},
+	{flag: futureChip2, name: "Future Chip 2 (not supported)"},
+}
 
 // nesWord is a little endian uint16
 type nesWord [2]byte
@@ -89,20 +94,11 @@ func (h nsfHeader) region() string {
 }
 
 func (h nsfHeader) extraChips() string {
-	// todo: replace those ugly if/else with a const [extraChipFlag, string]map
 	var chipsInUse []string
-	if h.ExtraChipFlags&vrc6 != 0 {
-		chipsInUse = append(chipsInUse, "VRC6")
-	} else if h.ExtraChipFlags&vrc7 != 0 {
-		chipsInUse = append(chipsInUse, "VRC7")
-	} else if h.ExtraChipFlags&fds != 0 {
-		chipsInUse = append(chipsInUse, "Famicom Disk System")
-	} else if h.ExtraChipFlags&mmc5 != 0 {
-		chipsInUse = append(chipsInUse, "mmc5")
-	} else if h.ExtraChipFlags&namco163 != 0 {
-		chipsInUse = append(chipsInUse, "Namco 163")
-	} else if h.ExtraChipFlags&sunsoft5b != 0 {
-		chipsInUse = append(chipsInUse, "Sunsoft 5B")
+	for _, i := range extraChips {
+		if h.ExtraChipFlags&i.flag != 0 {
+			chipsInUse = append(chipsInUse, i.name)
+		}
 	}
 
 	if len(chipsInUse) == 0 {

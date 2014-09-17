@@ -77,6 +77,16 @@ func TestStringWithValidDualRegionFile(t *testing.T) {
 	mustContain(t, fmt.Sprint(h), ": dual PAL/NTSC")
 }
 
+func TestStringWithMultiChipsFile(t *testing.T) {
+	var multiChipsHeader = append([]byte(nil), validHeader...)
+	multiChipsHeader[123] = 1<<1 | 1<<3 // VRC7 & MMC5
+
+	h, e := getHeaderFromSlice(multiChipsHeader)
+	hasHeaderNoError(t, h, e)
+
+	mustContain(t, fmt.Sprint(h), ": VRC7, MMC5")
+}
+
 // the main() test is really just there to add a bit of code coverage
 func TestMainWithValidFile(t *testing.T) {
 	oldStdout := os.Stdout

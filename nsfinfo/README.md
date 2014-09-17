@@ -31,6 +31,5 @@ run `go get` to download via git.
 This project is licensed under the MIT license. Consult `LICENSE` to get all the details.
 
 ## todo
-* add tests
 * add CI (via travis ci?)
 * add NSFE support (http://wiki.nesdev.com/w/index.php/NSFe)
