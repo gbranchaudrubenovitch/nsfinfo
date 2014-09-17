@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -37,13 +36,9 @@ func getHeader(relativePathToNsf string) (*nsfHeader, error) {
 		return nil, e
 	}
 
-	// validate the header
-	if string(header.Prelude[:]) != "NESM\x1A" {
-		return nil, errors.New("invalid nsf file: invalid prelude")
-	}
-
-	if header.ExtraChipFlags&futureChip1 != 0 || header.ExtraChipFlags&futureChip2 != 0 {
-		return nil, errors.New("invalid nsf file: extra sound chip section contains unsupported values")
+	valid, e := header.isValid()
+	if !valid {
+		return nil, e
 	}
 
 	return header, nil

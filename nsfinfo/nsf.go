@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -107,6 +108,18 @@ func (h nsfHeader) extraChips() string {
 		chipsInUse = append(chipsInUse, "none")
 	}
 	return strings.Join(chipsInUse, ", ")
+}
+
+func (h nsfHeader) isValid() (bool, error) {
+	// validate the header
+	if string(h.Prelude[:]) != "NESM\x1A" {
+		return false, errors.New("invalid nsf file: invalid prelude")
+	}
+
+	if h.ExtraChipFlags&futureChip1 != 0 || h.ExtraChipFlags&futureChip2 != 0 {
+		return false, errors.New("invalid nsf file: extra sound chip section contains unsupported values")
+	}
+	return true, nil
 }
 
 func trimNull(s []byte) string {
