@@ -55,7 +55,7 @@ type nsfHeader struct {
 }
 
 func (h nsfHeader) String() string {
-	return fmt.Sprintf("%-23s: %s\n%-23s: %s\n%-23s: %s\n%-23s: %d\n%-23s: %d\n%-23s: %s\n%-23s: %d\n----------------\n%-23s: %d\n%-23s: %v\n%-23s: %s\n%-23s: %#x\n%-23s: %#x\n%-23s: %#x",
+	return fmt.Sprintf("%-23s: %s\n%-23s: %s\n%-23s: %s\n%-23s: %d\n%-23s: %d\n%-23s: %s\n%-23s: %d\n----------------\n%-23s: %d\n%-23s: %v\n%-23s: %s\n%-23s: %#X\n%-23s: %#X\n%-23s: %#X",
 		"name", trimNull(h.SongName[:]),
 		"artist", trimNull(h.Artist[:]),
 		"copyright holder", trimNull(h.CopyrightHolder[:]),

@@ -22,10 +22,10 @@ run `go get` to download via git.
     ----------------
     nsf version            : 1
     uses bankswitching     : true
-    expansion chips in use : [none]
-    load address           : 0x8d60
-    init address           : 0xa003
-    play address           : 0xa000
+    expansion chips in use : none
+    load address           : 0x8D60
+    init address           : 0xA003
+    play address           : 0xA000
 
 ## License
 This project is licensed under the MIT license. Consult `LICENSE` to get all the details.
