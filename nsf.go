@@ -33,7 +33,7 @@ var extraChips = []struct {
 
 // nsfHeader exposes the nsf header fields (more info at http://wiki.nesdev.com/w/index.php/NSF)
 type nsfHeader struct {
-	Prelude          [5]byte
+	FourCC           [5]byte
 	Version          uint8
 	TotalSongs       uint8
 	StartingSong     uint8
@@ -49,6 +49,17 @@ type nsfHeader struct {
 	RegionFlags      regionFlag
 	ExtraChipFlags   extraChipFlag
 	ExpansionPadding int32 // always 0
+}
+
+func (h nsfHeader) isValid() (bool, error) {
+	if string(h.FourCC[:]) != "NESM\x1A" {
+		return false, errors.New("invalid nsf file - invalid FourCC")
+	}
+
+	if h.ExtraChipFlags&futureChip1 != 0 || h.ExtraChipFlags&futureChip2 != 0 {
+		return false, errors.New("invalid nsf file - extra sound chip section contains unsupported values")
+	}
+	return true, nil
 }
 
 func (h nsfHeader) String() string {
@@ -98,18 +109,6 @@ func (h nsfHeader) extraChips() string {
 	}
 
 	return strings.Join(chipsInUse, ", ")
-}
-
-func (h nsfHeader) isValid() (bool, error) {
-	// validate the header
-	if string(h.Prelude[:]) != "NESM\x1A" {
-		return false, errors.New("invalid nsf file - invalid prelude")
-	}
-
-	if h.ExtraChipFlags&futureChip1 != 0 || h.ExtraChipFlags&futureChip2 != 0 {
-		return false, errors.New("invalid nsf file - extra sound chip section contains unsupported values")
-	}
-	return true, nil
 }
 
 func trimNull(s []byte) string {
