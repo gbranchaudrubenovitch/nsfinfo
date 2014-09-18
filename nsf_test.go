@@ -18,48 +18,40 @@ var validHeader = []byte{
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1A, 0x41,
 	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 
+var getIsValidError = func(h *nsfHeader) string { _, e := h.isValid(); return e.Error() }
+var getString = func(h *nsfHeader) string { return h.String() }
+
 func TestIsValidWithInvalidFourCC(t *testing.T) {
-	testIsValid(t, 1, 0x55, "invalid FourCC")
+	testHeader(t, 1, 0x55, "invalid FourCC", getIsValidError)
 }
 
 func TestIsValidWithInvalidChips(t *testing.T) {
-	testIsValid(t, 123, 1<<7 /* "future chip" bit that must never be set */, "extra sound chip section contains unsupported values")
+	testHeader(t, 123, 1<<7 /* "future chip" bit that must never be set */, "extra sound chip section contains unsupported values", getIsValidError)
 }
 
 func TestStringWithMultiChipsFile(t *testing.T) {
-	testString(t, 123, 1<<1|1<<3, ": VRC7, MMC5")
+	testHeader(t, 123, 1<<1|1<<3, ": VRC7, MMC5", getString)
 }
 
 func TestStringWithValidPALFile(t *testing.T) {
-	testString(t, 122, 1<<0, ": PAL")
+	testHeader(t, 122, 1<<0, ": PAL", getString)
 }
 
 func TestStringWithValidDualRegionFile(t *testing.T) {
-	testString(t, 122, 1<<1, ": dual PAL/NTSC")
+	testHeader(t, 122, 1<<1, ": dual PAL/NTSC", getString)
 }
 
-type getOutput func(*nsfHeader) string
-
-func testIsValid(t *testing.T, newValIdx uint8, newVal byte, expectedContent string) {
-	test(t, newValIdx, newVal, func(h *nsfHeader) string { _, e := h.isValid(); return e.Error() }, expectedContent)
-}
-
-func testString(t *testing.T, newValIdx uint8, newVal byte, expectedContent string) {
-	test(t, newValIdx, newVal, func(h *nsfHeader) string { return h.String() }, expectedContent)
-}
-
-func test(t *testing.T, newValIdx uint8, newVal byte, fn getOutput, expectedContent string) {
+func testHeader(t *testing.T, newValIdx uint8, newVal byte, expectedContent string, fn func(*nsfHeader) string) {
 	var newHeader = append([]byte(nil), validHeader...)
 	newHeader[newValIdx] = newVal
 
-	h := buildNsfHeader(t, newHeader)
-	s := fn(h)
+	h := new(nsfHeader)
+	e := binary.Read(bytes.NewReader(newHeader), binary.LittleEndian, h)
+	if e != nil {
+		t.Fatal(e)
+	}
+
+	s := fn(h) // calls the actual operation on the header: IsValid(), String(), etc.
 
 	mustContain(t, s, expectedContent)
-}
-
-func buildNsfHeader(t *testing.T, headerBytes []byte) *nsfHeader {
-	h := new(nsfHeader)
-	binary.Read(bytes.NewReader(headerBytes), binary.LittleEndian, h)
-	return h
 }

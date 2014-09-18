@@ -10,24 +10,15 @@ import (
 // tests here are aimed against the methods in nsfinfo.go
 
 func TestGetHeaderWithFileNotFound(t *testing.T) {
-	h, e := getHeader("path-to-no-file")
-	hasErrorNoHeader(t, h, e)
-
-	mustContain(t, e.Error(), "open path-to-no-file")
+	testGetHeader(t, "path-to-no-file", "open path-to-no-file", func(c string) (*nsfHeader, error) { return getHeader(c) })
 }
 
 func TestGetHeaderWithFileTooShort(t *testing.T) {
-	h, e := getHeaderFromSlice([]byte("less than 128 bytes"))
-	hasErrorNoHeader(t, h, e)
-
-	mustContain(t, e.Error(), "unexpected EOF")
+	testGetHeader(t, "less than 128 bytes", "unexpected EOF", getHeaderFromSlice)
 }
 
 func TestGetHeaderWithInvalidHeader(t *testing.T) {
-	h, e := getHeaderFromSlice([]byte("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"))
-	hasErrorNoHeader(t, h, e)
-
-	mustContain(t, e.Error(), "invalid FourCC")
+	testGetHeader(t, "12812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812812", "invalid FourCC", getHeaderFromSlice)
 }
 
 // testing main() is really about adding code coverage
@@ -40,11 +31,17 @@ func TestMainWithValidFile(t *testing.T) {
 	main()
 }
 
-// getHeaderFromSlice calls getHeader() with the path to a temp file created from the byte slice
-func getHeaderFromSlice(content []byte) (*nsfHeader, error) {
-	ioutil.WriteFile("t.nsf", content, 0644)
+var getHeaderFromSlice = func(c string) (*nsfHeader, error) {
+	ioutil.WriteFile("t.nsf", []byte(c), 0644)
 	defer os.Remove("t.nsf")
 	return getHeader("t.nsf")
+}
+
+func testGetHeader(t *testing.T, content string, expectedError string, getHeader func(string) (*nsfHeader, error)) {
+	h, e := getHeader(content)
+	hasErrorNoHeader(t, h, e)
+
+	mustContain(t, e.Error(), expectedError)
 }
 
 func hasErrorNoHeader(t *testing.T, h *nsfHeader, e error) {
