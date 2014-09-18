@@ -31,7 +31,7 @@ func getHeader(relativePathToNsf string) (*nsfHeader, error) {
 
 	// read the actual bytes
 	header := new(nsfHeader)
-	e = binary.Read(f, binary.BigEndian, header)
+	e = binary.Read(f, binary.LittleEndian, header)
 	if e != nil {
 		return nil, e
 	}

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"strings"
@@ -32,28 +31,21 @@ var extraChips = []struct {
 	{flag: futureChip2, name: "Future Chip 2 (not supported)"},
 }
 
-// nesWord is a little endian uint16
-type nesWord [2]byte
-
-func (w nesWord) toUInt16() uint16 {
-	return binary.LittleEndian.Uint16(w[:])
-}
-
 // nsfHeader exposes the nsf header fields (more info at http://wiki.nesdev.com/w/index.php/NSF)
 type nsfHeader struct {
 	Prelude          [5]byte
-	Version          int8
-	TotalSongs       int8
-	StartingSong     int8
-	LoadAddress      nesWord
-	InitAddress      nesWord
-	PlayAddress      nesWord
+	Version          uint8
+	TotalSongs       uint8
+	StartingSong     uint8
+	LoadAddress      uint16
+	InitAddress      uint16
+	PlayAddress      uint16
 	SongName         [32]byte
 	Artist           [32]byte
 	CopyrightHolder  [32]byte
-	NTSCPlaySpeed    nesWord
-	BankswitchInit   int64 // we do not care about the specific banks assignment
-	PalPlaySpeed     nesWord
+	NTSCPlaySpeed    uint16
+	BankswitchInit   uint64 // we do not care about the specific banks assignment
+	PalPlaySpeed     uint16
 	RegionFlags      regionFlag
 	ExtraChipFlags   extraChipFlag
 	ExpansionPadding int32 // always 0
@@ -67,17 +59,17 @@ func (h nsfHeader) String() string {
 		"total # of songs", h.TotalSongs,
 		"first song", h.StartingSong,
 		"region", h.region(),
-		"play speed (μs)", h.playSpeed().toUInt16(),
+		"play speed (μs)", h.playSpeed(),
 		"nsf version", h.Version,
 		"uses bankswitching", h.BankswitchInit != 0,
 		"expansion chips in use", h.extraChips(),
-		"load address", h.LoadAddress.toUInt16(),
-		"init address", h.InitAddress.toUInt16(),
-		"play address", h.PlayAddress.toUInt16(),
+		"load address", h.LoadAddress,
+		"init address", h.InitAddress,
+		"play address", h.PlayAddress,
 	)
 }
 
-func (h nsfHeader) playSpeed() nesWord {
+func (h nsfHeader) playSpeed() uint16 {
 	if h.RegionFlags&pal != 0 {
 		return h.PalPlaySpeed
 	}
