@@ -1,3 +1,5 @@
+// nsfinfo is a command-line tool that gives the full header details of a NSF file.
+// usage is: nsfinfo path/to/nsf
 package main
 
 import (
