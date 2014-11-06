@@ -1,4 +1,4 @@
-# nsfinfo [![Build Status](https://travis-ci.org/gbranchaud/nsfinfo.svg?branch=master)](https://travis-ci.org/gbranchaud/nsfinfo)
+# nsfinfo [![Build Status](https://travis-ci.org/gbranchaud/nsfinfo.svg?branch=master)](https://travis-ci.org/gbranchaud/nsfinfo) [![Coverage Status](https://img.shields.io/coveralls/gbranchaud/nsfinfo.svg)](https://coveralls.io/r/gbranchaud/nsfinfo)
 
 command-line tool that gives the full header details of a [NSF file](http://wiki.nesdev.com/w/index.php/NSF).
 
