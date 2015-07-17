@@ -5,7 +5,7 @@ command-line tool that gives the full header details of a [NSF file](http://wiki
 ## Install
 run `go get` to download via git.
 
-    go get github.com/gbranchaud/nsfinfo
+    go get github.com/gbranchaudrubenovitch/nsfinfo
 
 ## Usage
     $ nsfinfo path-to.nsf
